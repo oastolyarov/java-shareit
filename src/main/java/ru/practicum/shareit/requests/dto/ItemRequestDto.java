@@ -1,7 +1,17 @@
 package ru.practicum.shareit.requests.dto;
 
-/**
- * // TODO .
- */
+import lombok.Data;
+import ru.practicum.shareit.user.User;
+
+import java.time.LocalDateTime;
+
+@Data
 public class ItemRequestDto {
+    private String description;
+    private LocalDateTime created;
+
+    public ItemRequestDto(String description, LocalDateTime created) {
+    this.description = description;
+    this.created = created;
+    }
 }
