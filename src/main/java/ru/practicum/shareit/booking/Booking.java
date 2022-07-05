@@ -17,8 +17,3 @@ public class Booking {
     private Status status;
 }
 
-class BookingMapper {
-    public static BookingDto toBokingDto(Booking booking) {
-        return new BookingDto(booking.getStart(), booking.getEnd(), booking.getItem().getId());
-    }
-}

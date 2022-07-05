@@ -14,8 +14,3 @@ public class ItemRequest {
     private LocalDateTime created;
 }
 
-class RequestMapper {
-    public static ItemRequestDto toRequestDto(ItemRequest itemRequest) {
-        return new ItemRequestDto(itemRequest.getDescription(), itemRequest.getCreated());
-    }
-}
