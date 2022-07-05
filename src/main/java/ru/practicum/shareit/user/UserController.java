@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ValidationException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/users")
