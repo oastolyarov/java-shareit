@@ -22,6 +22,9 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public User getUserById(@PathVariable int userId) {
+        if (users.get(userId) == null) {
+            throw new NullPointerException("Пользователь с id " + userId + " не найден.");
+        }
         return users.get(userId);
     }
 
@@ -30,7 +33,7 @@ public class UserController {
         return List.copyOf(users.values());
     }
 
-    @PutMapping
+    @PatchMapping
     public User updateUser(@RequestBody User user) {
         User newUser = new User();
         newUser.setId(user.getId());
@@ -44,6 +47,23 @@ public class UserController {
         }
 
         users.put(user.getId(), newUser);
+        return newUser;
+    }
+
+    @PatchMapping("/{id}")
+    public User updateById(@PathVariable int id, @RequestBody User user) {
+        User newUser = new User();
+        newUser.setId(id);
+        newUser.setName(user.getName() == null ? getUserById(id).getName() : user.getName());
+        newUser.setEmail(user.getEmail() == null ? getUserById(id).getEmail() : user.getEmail());
+
+        for (int i : users.keySet()) {
+            if (users.get(i).getEmail().equals(user.getEmail()) && users.get(i).getId() != user.getId()) {
+                throw new ValidationException("Пользователь с таким email уже существует.");
+            }
+        }
+
+        users.put(id, newUser);
         return newUser;
     }
 
@@ -66,5 +86,9 @@ public class UserController {
                 throw new ValidationException("Пользователь с таким email уже существует.");
             }
         }
+    }
+
+    public Map<Integer, User> getAll() {
+        return users;
     }
 }

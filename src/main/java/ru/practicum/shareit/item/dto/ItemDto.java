@@ -4,12 +4,14 @@ import lombok.Data;
 
 @Data
 public class ItemDto {
+    private Integer id;
     private String name;
     private String description;
-    private boolean available;
+    private Boolean available;
     private int requestId;
 
-    public ItemDto(String name, String description, boolean available, int requestId) {
+    public ItemDto(int id, String name, String description, Boolean available, int requestId) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;

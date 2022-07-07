@@ -6,14 +6,14 @@ import ru.practicum.shareit.user.User;
 
 @Data
 public class Item {
-    private int id;
+    private Integer id;
     private String name;
     private String description;
-    private boolean available;
+    private Boolean available;
     private User owner;
     private ItemRequest request;
 
-    public Item(int id, String name, String description, boolean available, User user, int requestId) {
+    public Item(int id, String name, String description, Boolean available, User user, int requestId) {
         this.id = id;
         this.name = name;
         this.description = description;

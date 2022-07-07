@@ -22,4 +22,10 @@ public class ErrorHandler {
     public Map<String, String> handlerIsNotNull(final NullPointerException e) {
         return Map.of("error", e.getMessage());
     }
+
+    @ExceptionHandler(UserIdNotValidException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handlerNoValid(final UserIdNotValidException e) {
+        return Map.of("error", e.getMessage());
+    }
 }

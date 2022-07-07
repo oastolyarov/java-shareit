@@ -8,9 +8,10 @@ import ru.practicum.shareit.user.User;
 import java.util.List;
 
 public interface ItemService {
-    public ItemDto create(ItemDto itemDto, User user);
+    public Item create(ItemDto itemDto, User user);
 
     public ItemDto update(Item item, int userId);
+    public ItemDto updateById(Item item, int userId, int itemId);
 
     public ItemDto getById(int id);
 

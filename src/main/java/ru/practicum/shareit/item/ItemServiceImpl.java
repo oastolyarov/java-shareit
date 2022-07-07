@@ -1,15 +1,13 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exceptions.UserIdNotValidException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.user.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ItemServiceImpl implements ItemService {
@@ -18,10 +16,10 @@ public class ItemServiceImpl implements ItemService {
     private Map<Integer, Item> items = new HashMap<>();
 
     @Override
-    public ItemDto create(ItemDto itemDto, User user) {
+    public Item create(ItemDto itemDto, User user) {
         items.put(id, ItemMapper.toItem(itemDto, id, user));
         id++;
-        return itemDto;
+        return items.get(id - 1);
     }
 
     @Override
@@ -34,6 +32,33 @@ public class ItemServiceImpl implements ItemService {
             }
         }
         return null;
+    }
+
+
+    @Override
+    public ItemDto updateById(Item item, int userId, int itemId) {
+        if (items.get(itemId).getOwner().getId() != userId) {
+            throw new UserIdNotValidException("Не верный идентификатор пользователя.");
+        }
+
+        if (!items.containsKey(itemId)) {
+            throw new NullPointerException("Предмет с id " + itemId + " не найден.");
+        }
+
+        items.get(itemId)
+                .setName(item.getName() == null ?
+                        items.get(itemId).getName() :
+                        item.getName());
+        items.get(itemId)
+                .setDescription(item.getDescription() == null ?
+                        items.get(itemId).getDescription() :
+                        item.getDescription());
+        items.get(itemId)
+                .setAvailable(item.getAvailable() == null ?
+                        items.get(itemId).getAvailable() :
+                        item.getAvailable());
+
+        return ItemMapper.toItemDto(items.get(itemId));
     }
 
     @Override
@@ -57,8 +82,14 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> search(String text) {
         List<ItemDto> searchItems = new ArrayList<>();
 
+        if (Objects.equals(text, "") || text == null) {
+            return searchItems;
+        }
+
         for (int i : items.keySet()) {
-            if (items.get(i).getName().contains(text) || items.get(i).getDescription().contains(text)) {
+            if (items.get(i).getName().toLowerCase().contains(text.toLowerCase()) ||
+                    items.get(i).getDescription().toLowerCase().contains(text.toLowerCase()) &&
+            items.get(i).getAvailable()) {
                 searchItems.add(ItemMapper.toItemDto(items.get(i)));
             }
         }

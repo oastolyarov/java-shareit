@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exceptions.UserIdNotValidException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserController;
@@ -20,13 +21,34 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto create(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") int userId) {
-        return itemService.create(itemDto, userController.getUserById(userId));
+    public Item create(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") String userId) {
+        if (!userController.getAll().containsKey(Integer.parseInt(userId))) {
+            throw new UserIdNotValidException("Пользователь с id " + userId + " не найден.");
+        }
+
+        if (!itemDto.getAvailable()) {
+            throw new NullPointerException("При создании предмет должен быть доступен для аренды.");
+        }
+
+        if (itemDto.getName() == "" || itemDto.getName() == null ||
+                itemDto.getDescription() == null || itemDto.getDescription() == "") {
+            throw new NullPointerException("Не указано название предмета.");
+        }
+
+        return itemService.create(itemDto, userController.getUserById(Integer.parseInt(userId)));
     }
 
-    @PutMapping
+    @PatchMapping
     public ItemDto update(@RequestBody Item item, @RequestHeader("X-Sharer-User-Id") int userId) {
         return itemService.update(item, userId);
+    }
+
+    @PatchMapping("/{itemId}")
+    public ItemDto updateById(@RequestBody Item item,
+                              @RequestHeader("X-Sharer-User-Id") int userId,
+                              @PathVariable int itemId) {
+
+        return itemService.updateById(item, userId, itemId);
     }
 
     @GetMapping("/{itemId}")
