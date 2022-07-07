@@ -26,13 +26,13 @@ public class ItemController {
             throw new UserIdNotValidException("Пользователь с id " + userId + " не найден.");
         }
 
-        if (!itemDto.getAvailable()) {
-            throw new NullPointerException("При создании предмет должен быть доступен для аренды.");
-        }
-
         if (itemDto.getName() == "" || itemDto.getName() == null ||
                 itemDto.getDescription() == null || itemDto.getDescription() == "") {
             throw new NullPointerException("Не указано название предмета.");
+        }
+
+        if (itemDto.getAvailable() == null) {
+            throw new NullPointerException("Укажите доступность предмета.");
         }
 
         return itemService.create(itemDto, userController.getUserById(Integer.parseInt(userId)));

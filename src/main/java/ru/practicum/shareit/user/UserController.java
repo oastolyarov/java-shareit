@@ -73,12 +73,12 @@ public class UserController {
     }
 
     private void emailValidation(User user) {
-        if (!user.getEmail().matches("^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}")) {
-            throw new NullPointerException("Не правильно указан email.");
-        }
-
         if (user.getEmail() == null) {
             throw new NullPointerException("Нужно указать email.");
+        }
+
+        if (!user.getEmail().matches("^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\\.[a-zA-Z]{2,4}")) {
+            throw new NullPointerException("Не правильно указан email.");
         }
 
         for (int i : users.keySet()) {
