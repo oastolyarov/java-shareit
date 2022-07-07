@@ -11,6 +11,7 @@ public interface ItemService {
     public Item create(ItemDto itemDto, User user);
 
     public ItemDto update(Item item, int userId);
+
     public ItemDto updateById(Item item, int userId, int itemId);
 
     public ItemDto getById(int id);
