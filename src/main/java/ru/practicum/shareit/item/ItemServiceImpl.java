@@ -5,7 +5,7 @@ import ru.practicum.shareit.exceptions.UserIdNotValidException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemMapper;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
 
@@ -16,10 +16,10 @@ public class ItemServiceImpl implements ItemService {
     private Map<Integer, Item> items = new HashMap<>();
 
     @Override
-    public Item create(ItemDto itemDto, User user) {
+    public ItemDto create(ItemDto itemDto, User user) {
         items.put(id, ItemMapper.toItem(itemDto, id, user));
         id++;
-        return items.get(id - 1);
+        return ItemMapper.toItemDto(items.get(id - 1));
     }
 
     @Override
@@ -67,12 +67,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getAll(int userId) {
-        List<Item> userItem = new ArrayList<>();
+    public List<ItemDto> getAll(int userId) {
+        List<ItemDto> userItem = new ArrayList<>();
 
         for (int i : items.keySet()) {
             if (items.get(i).getOwner().getId() == userId) {
-                userItem.add(items.get(i));
+                userItem.add(ItemMapper.toItemDto(items.get(i)));
             }
         }
         return userItem;

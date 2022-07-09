@@ -5,6 +5,7 @@ import ru.practicum.shareit.exceptions.UserIdNotValidException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserController;
+import ru.practicum.shareit.user.model.UserMapper;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public Item create(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") String userId) {
+    public ItemDto create(@RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") String userId) {
         if (!userController.getAll().containsKey(Integer.parseInt(userId))) {
             throw new UserIdNotValidException("Пользователь с id " + userId + " не найден.");
         }
@@ -35,7 +36,7 @@ public class ItemController {
             throw new NullPointerException("Укажите доступность предмета.");
         }
 
-        return itemService.create(itemDto, userController.getUserById(Integer.parseInt(userId)));
+        return itemService.create(itemDto, UserMapper.toUser(userController.getUserById(Integer.parseInt(userId))));
     }
 
     @PatchMapping
@@ -57,7 +58,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<Item> getAll(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") int userId) {
         return itemService.getAll(userId);
     }
 
