@@ -2,8 +2,6 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class ItemDto {
     private Integer id = 0;
