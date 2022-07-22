@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.model.UserMapper;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,12 +41,12 @@ public class BookingServiceImpl implements BookingService {
 
         Item item = itemRepository.findById(bookingDto.getItemId()).get();
 
-        if (item.getOwner().getId() == userId) {
+        if (Objects.equals(item.getOwner().getId(), userId)) {
             throw new UserIdNotValidException("Владелец вещи не может бронировать саму вещь.");
         }
 
         if (!item.getAvailable()) {
-            throw new NullPointerException(String.format("Предмет недоступен."));
+            throw new NullPointerException("Предмет недоступен.");
         }
 
         if (bookingDto.getStart().isAfter(bookingDto.getEnd()) || bookingDto.getStart().isBefore(LocalDateTime.now())) {
@@ -76,7 +77,7 @@ public class BookingServiceImpl implements BookingService {
             throw new NullPointerException("Статус уже установлен.");
         }
 
-        if (item.getOwner().getId() != userId) {
+        if (!Objects.equals(item.getOwner().getId(), userId)) {
             throw new UserIdNotValidException(String.format("Пользователь с id %d не является владельцем вещи.", userId));
         }
 
@@ -102,7 +103,7 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingIsNotValid("Бронирование не найдено.");
         }
 
-        if (item.getOwner().getId() == userId || booking.getBooker().getId() == userId) {
+        if (Objects.equals(item.getOwner().getId(), userId) || Objects.equals(booking.getBooker().getId(), userId)) {
             return booking;
         } else {
             throw new UserIdNotValidException("Указан некорректный пользователь.");
@@ -122,7 +123,7 @@ public class BookingServiceImpl implements BookingService {
 
 
         List<Booking> bookings = bookingRepository.findAll().stream()
-                .filter(s -> s.getItem().getOwner().getId() == userId)
+                .filter(s -> Objects.equals(s.getItem().getOwner().getId(), userId))
                 .collect(Collectors.toList());
 
         return getFromState(state, bookings);

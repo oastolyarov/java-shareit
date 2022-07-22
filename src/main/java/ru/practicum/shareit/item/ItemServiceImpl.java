@@ -57,7 +57,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateById(ItemDto itemDto, int userId, int itemId) {
         UserDto userDto = userServiceImpl.getUserById(userId);
         ItemDto currentItem = ItemMapper.toItemDto(itemRepository.findById(itemId).get());
-        if (userDto.getId() != itemRepository.getItemOwnerId(itemId).getId()) {
+        if (!Objects.equals(userDto.getId(), itemRepository.getItemOwnerId(itemId).getId())) {
             throw new UserIdNotValidException("Предмет принадлежит другому пользователю.");
         }
 
@@ -92,7 +92,7 @@ public class ItemServiceImpl implements ItemService {
 
         Item item = itemRepository.findById(id).get();
 
-        if (item.getOwner().getId() != userId) {
+        if (!Objects.equals(item.getOwner().getId(), userId)) {
             return new ItemCommentsDto(item.getId(),
                     item.getName(),
                     item.getDescription(),
