@@ -28,4 +28,16 @@ public class ErrorHandler {
     public Map<String, String> handlerNoValid(final UserIdNotValidException e) {
         return Map.of("error", e.getMessage());
     }
+
+    @ExceptionHandler(ItemNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> itemNotValidHandler(final ItemNotFoundException e) {
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler(BookingIsNotValid.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> bookingNotValidHandler(final BookingIsNotValid e) {
+        return Map.of("error", e.getMessage());
+    }
 }

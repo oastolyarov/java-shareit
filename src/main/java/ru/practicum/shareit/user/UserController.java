@@ -1,8 +1,8 @@
 package ru.practicum.shareit.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
 
@@ -12,6 +12,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -31,11 +32,6 @@ public class UserController {
         return userService.getUsers();
     }
 
-    @PatchMapping
-    public UserDto updateUser(@RequestBody UserDto userDto) {
-        return userService.updateUser(userDto);
-    }
-
     @PatchMapping("/{id}")
     public UserDto updateById(@PathVariable int id, @RequestBody UserDto userDto) {
         return userService.updateById(id, userDto);
@@ -44,9 +40,5 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable int id) {
         userService.deleteUserById(id);
-    }
-
-    public Map<Integer, User> getAll() {
-        return userService.getAll();
     }
 }

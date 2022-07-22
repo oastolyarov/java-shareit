@@ -1,2 +1,2 @@
 # java-shareit
-Template repository for Shareit project.
+1. ER-диаграмма БД https://github.com/oastolyarov/java-shareit/blob/main/er-diagram%20shareit.pdf
