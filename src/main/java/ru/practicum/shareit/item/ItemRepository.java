@@ -20,13 +20,14 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
     User getItemOwnerId(Integer itemId);
 
     @Query("select i from Item i where lower(i.name) like lower(concat('%', ?1, '%')) or " +
-            "lower(i.description) like lower(concat('%', ?1, '%'))")
+            "lower(i.description) like concat('%', ?1, '%')")
     List<Item> search(String text);
+
+    @Query("select upper(lower(upper(name))) as a from Item")
+    List<Item> testSearch(String text);
 
     @Transactional
     @Modifying
     @Query("update Item i set i.available = ?1 where i.id = ?2")
     void setAvailableById(Boolean available, Integer itemId);
-
-
 }

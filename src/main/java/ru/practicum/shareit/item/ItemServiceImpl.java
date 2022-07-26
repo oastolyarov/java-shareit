@@ -173,7 +173,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        return itemRepository.search(text).stream().filter(Item::getAvailable)
+        return itemRepository.search(text.toLowerCase()).stream().filter(Item::getAvailable)
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
