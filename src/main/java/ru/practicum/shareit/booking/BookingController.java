@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingLongDto;
 
 import java.util.List;
 
@@ -25,26 +26,26 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public Booking setStatus(@PathVariable Integer bookingId,
-                             @RequestParam Boolean approved,
-                             @RequestHeader("X-Sharer-User-Id") Integer userId) {
+    public BookingLongDto setStatus(@PathVariable Integer bookingId,
+                                    @RequestParam Boolean approved,
+                                    @RequestHeader("X-Sharer-User-Id") Integer userId) {
         return bookingService.setStatus(bookingId, approved, userId);
     }
 
     @GetMapping("/{bookingId}")
-    public Booking getStatus(@PathVariable Integer bookingId,
+    public BookingLongDto getStatus(@PathVariable Integer bookingId,
                              @RequestHeader("X-Sharer-User-Id") Integer userId) {
         return bookingService.getStatus(bookingId, userId);
     }
 
     @GetMapping
-    public List<Booking> getUserBookings(@RequestParam(required = false) String state,
+    public List<BookingLongDto> getUserBookings(@RequestParam(required = false) String state,
                                          @RequestHeader("X-Sharer-User-Id") Integer userId) {
         return bookingService.getUserBookings(state, userId);
     }
 
     @GetMapping("/owner")
-    public List<Booking> getOwnerBookings(@RequestParam(required = false) String state,
+    public List<BookingLongDto> getOwnerBookings(@RequestParam(required = false) String state,
                                           @RequestHeader("X-Sharer-User-Id") Integer userId) {
         return bookingService.getOwnerBookings(state, userId);
     }

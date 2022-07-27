@@ -17,7 +17,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.CommentMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemMapper;
-import ru.practicum.shareit.user.UserServiceImpl;
+import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.model.UserMapper;
@@ -30,14 +30,17 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
 
     @Autowired
-    public ItemServiceImpl(ItemRepository itemRepository, UserServiceImpl userServiceImpl, BookingRepository bookingRepository, CommentRepository commentRepository) {
+    public ItemServiceImpl(ItemRepository itemRepository,
+                           UserService userService,
+                           BookingRepository bookingRepository,
+                           CommentRepository commentRepository) {
         this.itemRepository = itemRepository;
-        this.userServiceImpl = userServiceImpl;
+        this.userService = userService;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
     }
@@ -45,17 +48,17 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(ItemDto itemDto, Integer userId) {
 
-        UserDto userDto = userServiceImpl.getUserById(userId);
+        UserDto userDto = userService.getUserById(userId);
         itemDto.setId(0);
 
         return ItemMapper.toItemDto(itemRepository
                 .save(ItemMapper.toItem(itemDto,
-                        UserMapper.toUser(userServiceImpl.getUserById(userId)))));
+                        UserMapper.toUser(userService.getUserById(userId)))));
     }
 
     @Override
     public ItemDto updateById(ItemDto itemDto, int userId, int itemId) {
-        UserDto userDto = userServiceImpl.getUserById(userId);
+        UserDto userDto = userService.getUserById(userId);
         ItemDto currentItem = ItemMapper.toItemDto(itemRepository.findById(itemId).get());
         if (!Objects.equals(userDto.getId(), itemRepository.getItemOwnerId(itemId).getId())) {
             throw new UserIdNotValidException("Предмет принадлежит другому пользователю.");
@@ -204,7 +207,7 @@ public class ItemServiceImpl implements ItemService {
                     .format("Пользователь с id %d не бронировал предмет с id %d", authorId, itemId));
         }
 
-        User user = UserMapper.toUser(userServiceImpl.getUserById(authorId));
+        User user = UserMapper.toUser(userService.getUserById(authorId));
 
         Item item = ItemMapper.toItem(getById(itemId, authorId), user);
 

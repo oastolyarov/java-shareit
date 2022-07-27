@@ -2,13 +2,13 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingLongDto;
 import ru.practicum.shareit.exceptions.BookingIsNotValid;
 import ru.practicum.shareit.exceptions.ItemNotFoundException;
 import ru.practicum.shareit.exceptions.UserIdNotValidException;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.ItemServiceImpl;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserServiceImpl;
+import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.UserMapper;
 
 import java.time.LocalDateTime;
@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
-    private final UserServiceImpl userServiceImpl;
-    private final ItemServiceImpl itemServiceImpl;
+    private final UserService userService;
     private final ItemRepository itemRepository;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, UserServiceImpl userServiceImpl, ItemServiceImpl itemServiceImpl, ItemRepository itemRepository) {
+    public BookingServiceImpl(BookingRepository bookingRepository,
+                              UserService userService,
+                              ItemRepository itemRepository) {
         this.bookingRepository = bookingRepository;
-        this.userServiceImpl = userServiceImpl;
-        this.itemServiceImpl = itemServiceImpl;
+        this.userService = userService;
         this.itemRepository = itemRepository;
     }
 
@@ -58,14 +58,14 @@ public class BookingServiceImpl implements BookingService {
         booking.setStart(bookingDto.getStart());
         booking.setEnd(bookingDto.getEnd());
         booking.setItem(item);
-        booking.setBooker(UserMapper.toUser(userServiceImpl.getUserById(userId)));
+        booking.setBooker(UserMapper.toUser(userService.getUserById(userId)));
         booking.setStatus(Status.WAITING);
 
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
     @Override
-    public Booking setStatus(Integer bookingId, Boolean approved, Integer userId) {
+    public BookingLongDto setStatus(Integer bookingId, Boolean approved, Integer userId) {
         Item item = bookingRepository.getItemByBookingId(bookingId);
         Booking booking = bookingRepository.findById(bookingId).get();
 
@@ -84,17 +84,16 @@ public class BookingServiceImpl implements BookingService {
         if (approved) {
             booking.setStatus(Status.APPROVED);
             bookingRepository.setBookingStatus(bookingId, Status.APPROVED);
-            //itemRepository.setAvailableById(false, item.getId());
         } else {
             booking.setStatus(Status.REJECTED);
             bookingRepository.setBookingStatus(bookingId, Status.REJECTED);
         }
 
-        return booking;
+        return BookingMapper.toBookingLongDto(booking);
     }
 
     @Override
-    public Booking getStatus(Integer bookingId, Integer userId) {
+    public BookingLongDto getStatus(Integer bookingId, Integer userId) {
         Item item = bookingRepository.getItemByBookingId(bookingId);
         Booking booking = new Booking();
         try {
@@ -104,29 +103,32 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (Objects.equals(item.getOwner().getId(), userId) || Objects.equals(booking.getBooker().getId(), userId)) {
-            return booking;
+            return BookingMapper.toBookingLongDto(booking);
         } else {
             throw new UserIdNotValidException("Указан некорректный пользователь.");
         }
     }
 
     @Override
-    public List<Booking> getUserBookings(String state, Integer userId) {
+    public List<BookingLongDto> getUserBookings(String state, Integer userId) {
         List<Booking> bookings = bookingRepository.getBookingsOfUser(userId);
 
-        return getFromState(state, bookings);
+        return getFromState(state, bookings).stream()
+                .map(BookingMapper::toBookingLongDto)
+                .collect(Collectors.toList());
     }
 
-
     @Override
-    public List<Booking> getOwnerBookings(String state, Integer userId) {
+    public List<BookingLongDto> getOwnerBookings(String state, Integer userId) {
 
 
         List<Booking> bookings = bookingRepository.findAll().stream()
                 .filter(s -> Objects.equals(s.getItem().getOwner().getId(), userId))
                 .collect(Collectors.toList());
 
-        return getFromState(state, bookings);
+        return getFromState(state, bookings).stream()
+                .map(BookingMapper::toBookingLongDto)
+                .collect(Collectors.toList());
     }
 
     private List<Booking> getFromState(String state, List<Booking> bookings) {
