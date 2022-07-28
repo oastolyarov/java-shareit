@@ -10,7 +10,7 @@ public class ItemRequestDto {
     private LocalDateTime created;
 
     public ItemRequestDto(String description, LocalDateTime created) {
-    this.description = description;
-    this.created = created;
+        this.description = description;
+        this.created = created;
     }
 }

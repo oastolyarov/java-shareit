@@ -1,23 +1,23 @@
 package ru.practicum.shareit.item;
 
-import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemBookingsDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.item.model.Comment;
 
 import java.util.List;
 
 public interface ItemService {
-    public ItemDto create(ItemDto itemDto, User user);
+    public ItemDto create(ItemDto itemDto, Integer userId);
 
-    public ItemDto update(Item item, int userId);
+    public ItemDto updateById(ItemDto itemDto, int userId, int itemId);
 
-    public ItemDto updateById(Item item, int userId, int itemId);
+    public ItemDto getById(int id, Integer userId);
 
-    public ItemDto getById(int id);
+    public List<ItemBookingsDto> getAll(int userId);
 
-    public List<ItemDto> getAll(int userId);
+    public List<ItemDto> search(String text);
 
-    public List<ItemDto> search(@PathVariable String text);
+    public CommentDto setComment(int itemId, Comment comment, int authorId);
 
 }
